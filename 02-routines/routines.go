@@ -1,4 +1,4 @@
-package _2_routines
+package main
 
 import (
     "fmt"
