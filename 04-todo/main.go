@@ -18,7 +18,7 @@ type Tasks []Task
 
 var tasks Tasks = make([]Task, 0)
 
-func init() {
+func main() {
     router := httprouter.New()
     router.GET("/", Index)
     router.POST("/new-task", NewTask)
