@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
     "log"
@@ -18,7 +18,7 @@ type Tasks []Task
 
 var tasks Tasks = make([]Task, 0)
 
-func main() {
+func init() {
     router := httprouter.New()
     router.GET("/", Index)
     router.POST("/new-task", NewTask)
@@ -45,8 +45,9 @@ func NewTask(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
     if r.Method == "POST" {
         tasks = append(tasks, Task{false, r.FormValue("task"), false})
         http.Redirect(w, r, "/", http.StatusSeeOther)
+    } else {
+        http.Error(w, "WRONG METHOD \n Got: "+r.Method+"\n Expected: POST", 500)
     }
-    http.Error(w, "WRONG METHOD \n Got: "+r.Method+"\n Expected: POST", 500)
 }
 
 // Handle completing a tasks
@@ -59,8 +60,9 @@ func CompleteTask(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
         tasks[id].Completed = !tasks[id].Completed
 
         http.Redirect(w, r, "/", http.StatusSeeOther)
+    } else {
+        http.Error(w, "WRONG METHOD \nGot: "+r.Method+"\nExpected: GET", 500)
     }
-    http.Error(w, "WRONG METHOD \nGot: "+r.Method+"\nExpected: GET", 500)
 }
 
 // Handle removing a tasks
@@ -73,6 +75,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
         tasks[id].Deleted = true
 
         http.Redirect(w, r, "/", http.StatusSeeOther)
+    } else {
+        http.Error(w, "WRONG METHOD \n Got: "+r.Method+"\n Expected: GET", 500)
     }
-    http.Error(w, "WRONG METHOD \n Got: "+r.Method+"\n Expected: GET", 500)
 }
