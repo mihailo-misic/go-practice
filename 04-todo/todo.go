@@ -26,7 +26,7 @@ func init() {
     router.GET("/delete-task/:id", DeleteTask)
     router.ServeFiles("/assets/*filepath", http.Dir("assets/"))
 
-    log.Fatal(http.ListenAndServe("localhost:8000", router))
+    http.Handle("/", router)
 }
 
 // View all tasks
