@@ -4,7 +4,3 @@ api_version: go1
 handlers:
 - url: /.*
   script: _go_app
-#- url: /assets/materialize/fonts/(.*\.woff2)$
-#    static_files: assets/materialize/fonts/\1
-#    upload: assets/materialize/fonts/(.*\.woff2)$
-#    mime_type: application/font-woff2
