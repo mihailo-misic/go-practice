@@ -1,0 +1,18 @@
+body > .login-body {
+    min-height: 100vh;
+    padding-top: 20vh;
+}
+
+.card-header {
+    text-align: center !important;
+    padding: 5px;
+}
+
+.card-footer {
+    text-align: right !important;
+    padding: 0 15px 15px 0;
+}
+
+.card hr{
+    border: solid #e5e5e5 2px
+}
