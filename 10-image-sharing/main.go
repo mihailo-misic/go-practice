@@ -5,9 +5,11 @@ import (
     "log"
     "github.com/julienschmidt/httprouter"
     "html/template"
-    "fmt"
     "github.com/astaxie/beego/orm"
     _ "github.com/go-sql-driver/mysql"
+    "time"
+    "net/url"
+    "strings"
 )
 
 var tpl *template.Template
@@ -35,8 +37,9 @@ func main() {
     router := httprouter.New()
     router.GET("/", Index)
     router.GET("/login", Login)
-    router.POST("/login", ProcessLogin)
+    router.POST("/login-submit", ProcessLogin)
     router.GET("/register", Register)
+    router.POST("/register-submit", ProcessRegister)
     router.GET("/logout", Logout)
     router.GET("/me", Me)
     router.ServeFiles("/assets/*filepath", http.Dir("assets/"))
@@ -45,36 +48,72 @@ func main() {
 }
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+    if !isLoggedIn(r) {
+        http.Redirect(w, r, "/login", http.StatusSeeOther)
+        return
+    }
+
     tpl.ExecuteTemplate(w, "index.gohtml", nil)
 }
 
 func Login(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-    tpl.ExecuteTemplate(w, "login.gohtml", nil)
+    old_data := make(map[string]string, 2)
+    // Get old data from cookie
+    cookie, err := r.Cookie("old_data")
+    if err == nil {
+        parsed, err := url.ParseQuery(cookie.Value)
+        check(err, w)
+        for k, v := range parsed {
+            old_data[k] = strings.Join(v, "")
+        }
+    }
+
+    tpl.ExecuteTemplate(w, "login.gohtml", old_data)
 }
 
 func ProcessLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-    // TODO Check if already logged in
+    // If already logged in just redirect to home
+    if isLoggedIn(r) {
+        http.Redirect(w, r, "/", http.StatusSeeOther)
+        return
+    }
+
     if r.Method == http.MethodPost {
         err := r.ParseForm()
         check(err, w)
 
+        // Get email and password from form
         email := r.FormValue("email")
         password := r.FormValue("password")
 
+        // Check if the required fields are set
         if len(email) == 0 || len(password) == 0 {
-            http.Redirect(w, r, "/login", http.StatusUnprocessableEntity)
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
         }
-        fmt.Fprintln(w, email, password)
 
-        //o := orm.NewOrm()
-        //
-        //u := User{
-        //    Email:    string(form["email"]),
-        //    Password: string(form["password"]),
-        //}
-        //
-        //o.Read(&u)
-        //fmt.Fprintln(w, u)
+        o := orm.NewOrm()
+
+        u := User{
+            Email:    email,
+            Password: password,
+        }
+
+        // Get user from database
+        found := o.Read(&u, "Email", "Password")
+        if found != nil {
+            expires := time.Now().Add(time.Second * 3)
+            cookie := http.Cookie{Name: "old_data", Value: r.PostForm.Encode(), Expires: expires}
+            http.SetCookie(w, &cookie)
+
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
+            return
+        }
+
+        // Set user session
+        session := http.Cookie{Name: "session", Value: u.Email}
+        http.SetCookie(w, &session)
+
+        http.Redirect(w, r, "/", http.StatusSeeOther)
     }
 }
 
@@ -82,8 +121,18 @@ func Register(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
     tpl.ExecuteTemplate(w, "register.gohtml", nil)
 }
 
+func ProcessRegister(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+}
+
 func Logout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-    // TODO Erase state logic
+    // Delete session
+    c := &http.Cookie{
+        Name:   "session",
+        Value:  "",
+        MaxAge: -1,
+    }
+    http.SetCookie(w, c)
+
     http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
@@ -96,4 +145,12 @@ func check(err error, w http.ResponseWriter) {
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
+}
+
+func isLoggedIn(r *http.Request) bool {
+    _, err := r.Cookie("session")
+    if err != nil {
+        return false
+    }
+    return true
 }

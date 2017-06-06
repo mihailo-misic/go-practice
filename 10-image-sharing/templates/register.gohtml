@@ -1,0 +1,73 @@
+{{template "header"}}
+
+<div class="container register-body">
+    <div class="row">
+        <div class="col s6 offset-s3">
+            <div class="card">
+                <form method="POST" action="/register-submit">
+                    <div class="card-header">
+                        <h4 class="card-title">Register</h4>
+                    </div>
+
+                    <hr>
+
+                    <div class="card-content center-align">
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="first_name" type="text" class="validate" name="first_name">
+                                <label for="first_name">First name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="last_name" type="text" class="validate" name="last_name">
+                                <label for="last_name">Last name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="email" type="email" class="validate" name="email">
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="password" type="password" class="validate" name="password" oninput="compare()">
+                                <label for="password">Password</label>
+                                <p class="pass-error"></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="confirm_password" type="password" class="validate" name="confirm_password" oninput="compare()">
+                                <label for="confirm_password">Confirm password</label>
+                                <p class="pass-error"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="col s12 right-align">
+                                <button type="submit" class="waves-effect waves-light btn-large"><i class="material-icons left">mode_edit</i>Register</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function compare() {
+        var pass = document.querySelector("#password").value;
+        var c_pass = document.querySelector("#confirm_password").value;
+
+        if (pass !== c_pass) {
+            document.querySelector(".pass-error").innerHTML = "The passwords do not match!"
+        }
+        else{
+            document.querySelector(".pass-error").innerHTML = ""
+        }
+    }
+</script>
+{{template "footer"}}
