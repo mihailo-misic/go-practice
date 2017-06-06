@@ -61,12 +61,18 @@
     function compare() {
         var pass = document.querySelector("#password").value;
         var c_pass = document.querySelector("#confirm_password").value;
+        var elements = document.querySelector(".pass-error");
+        var i = 0;
 
         if (pass !== c_pass) {
-            document.querySelector(".pass-error").innerHTML = "The passwords do not match!"
+            for (i; i < elements.length; i++) {
+                elements[i].innerHTML = "The passwords do not match!"
+            }
         }
-        else{
-            document.querySelector(".pass-error").innerHTML = ""
+        else {
+            for (i; i < elements.length; i++) {
+                elements[i].innerHTML = ""
+            }
         }
     }
 </script>
