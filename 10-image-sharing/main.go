@@ -28,7 +28,7 @@ func (u *User) TableName() string {
 
 func init() {
     tpl = template.Must(template.ParseGlob("./templates/*"))
-
+    
     orm.RegisterModel(new(User))
     orm.RegisterDataBase("default", "mysql", "root:secret@/practice?charset=utf8", 30)
 }
@@ -43,7 +43,7 @@ func main() {
     router.GET("/logout", Logout)
     router.GET("/me", Me)
     router.ServeFiles("/assets/*filepath", http.Dir("assets/"))
-
+    
     log.Fatal(http.ListenAndServe(":8080", router))
 }
 
@@ -52,7 +52,7 @@ func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
         http.Redirect(w, r, "/login", http.StatusSeeOther)
         return
     }
-
+    
     tpl.ExecuteTemplate(w, "index.gohtml", nil)
 }
 
@@ -67,7 +67,7 @@ func Login(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
             old_data[k] = strings.Join(v, "")
         }
     }
-
+    
     tpl.ExecuteTemplate(w, "login.gohtml", old_data)
 }
 
@@ -77,42 +77,39 @@ func ProcessLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
         http.Redirect(w, r, "/", http.StatusSeeOther)
         return
     }
-
+    
     if r.Method == http.MethodPost {
-        err := r.ParseForm()
-        check(err, w)
-
         // Get email and password from form
         email := r.FormValue("email")
         password := r.FormValue("password")
-
+        
         // Check if the required fields are set
         if len(email) == 0 || len(password) == 0 {
             http.Redirect(w, r, "/login", http.StatusSeeOther)
         }
-
+        
         o := orm.NewOrm()
-
-        u := User{
+        
+        u := &User{
             Email:    email,
             Password: password,
         }
-
+        
         // Get user from database
-        found := o.Read(&u, "Email", "Password")
+        found := o.Read(u, "Email", "Password")
         if found != nil {
             expires := time.Now().Add(time.Second * 3)
             cookie := http.Cookie{Name: "old_data", Value: r.PostForm.Encode(), Expires: expires}
             http.SetCookie(w, &cookie)
-
+            
             http.Redirect(w, r, "/login", http.StatusSeeOther)
             return
         }
-
+        
         // Set user session
         session := http.Cookie{Name: "session", Value: u.Email}
         http.SetCookie(w, &session)
-
+        
         http.Redirect(w, r, "/", http.StatusSeeOther)
     }
 }
@@ -122,6 +119,38 @@ func Register(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func ProcessRegister(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+    // Get registry data from form
+    first_name := r.FormValue("first_name")
+    last_name := r.FormValue("last_name")
+    email := r.FormValue("email")
+    password := r.FormValue("password")
+    confirm_password := r.FormValue("confirm_password")
+    
+    // Check for required and if the password is confirmed
+    if len(first_name) == 0 || len(last_name) == 0 || len(email) == 0 || len(password) == 0 || len(confirm_password) == 0 {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    } else if password != confirm_password {
+        http.Redirect(w, r, "/register", http.StatusSeeOther)
+        return
+    }
+    
+    u := &User{
+        FirstName: first_name,
+        LastName:  last_name,
+        Email:     email,
+        Password:  password,
+    }
+    
+    o := orm.NewOrm()
+    
+    _, err := o.Insert(u)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    
+    http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -132,7 +161,7 @@ func Logout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
         MaxAge: -1,
     }
     http.SetCookie(w, c)
-
+    
     http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
