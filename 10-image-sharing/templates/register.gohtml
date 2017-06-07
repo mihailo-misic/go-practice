@@ -30,16 +30,16 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="password" type="password" class="validate" name="password" oninput="compare()">
+                                <input id="password" type="password" class="invalid" name="password" oninput="compare()">
                                 <label for="password">Password</label>
-                                <p class="pass-error"></p>
+                                <p class="error pass-error materialize-red-text">The passwords do not match!</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="confirm_password" type="password" class="validate" name="confirm_password" oninput="compare()">
+                                <input id="confirm_password" type="password" class="invalid" name="confirm_password" oninput="compare()">
                                 <label for="confirm_password">Confirm password</label>
-                                <p class="pass-error"></p>
+                                <p class="error pass-error materialize-red-text">The passwords do not match!</p>
                             </div>
                         </div>
                     </div>
@@ -61,18 +61,26 @@
     function compare() {
         var pass = document.querySelector("#password").value;
         var c_pass = document.querySelector("#confirm_password").value;
-        var elements = document.querySelector(".pass-error");
+        var elements = document.getElementsByClassName("pass-error");
         var i = 0;
 
         if (pass !== c_pass) {
             for (i; i < elements.length; i++) {
-                elements[i].innerHTML = "The passwords do not match!"
+                elements[i].style.display = "hidden"
             }
+            document.getElementById('password').classList.add('invalid');
+            document.getElementById('confirm_password').classList.add('invalid');
+            document.getElementById('password').classList.remove('valid');
+            document.getElementById('confirm_password').classList.remove('valid');
         }
         else {
             for (i; i < elements.length; i++) {
-                elements[i].innerHTML = ""
+                elements[i].style.display = "none"
             }
+            document.getElementById('password').classList.add('valid');
+            document.getElementById('confirm_password').classList.add('valid');
+            document.getElementById('password').classList.remove('invalid');
+            document.getElementById('confirm_password').classList.remove('invalid');
         }
     }
 </script>
