@@ -1,11 +1,15 @@
 body > .login-body {
     min-height: 100vh;
-    padding-top: 20vh;
+    padding-top: calc((100vh - 430px) / 2);
 }
 
 body > .register-body {
     min-height: 100vh;
-    padding-top: 15vh;
+    padding-top: calc((100vh - 630px) / 2);
+}
+
+.register-body > .row, .login-body > .row {
+    margin-bottom: 0;
 }
 
 .card-header {
@@ -22,5 +26,12 @@ body > .register-body {
 }
 
 .error {
-    transition: visibility 0s, opacity 0.5s linear;
+    transition: all 400ms ease-in-out;
+    height: 0;
+    opacity: 0;
+}
+
+.error.show {
+    height: auto;
+    opacity: 1;
 }

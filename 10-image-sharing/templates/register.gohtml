@@ -66,7 +66,7 @@
 
         if (pass !== c_pass) {
             for (i; i < elements.length; i++) {
-                elements[i].style.display = "hidden"
+                elements[i].classList.add("show")
             }
             document.getElementById('password').classList.add('invalid');
             document.getElementById('confirm_password').classList.add('invalid');
@@ -75,7 +75,7 @@
         }
         else {
             for (i; i < elements.length; i++) {
-                elements[i].style.display = "none"
+                elements[i].classList.remove("show")
             }
             document.getElementById('password').classList.add('valid');
             document.getElementById('confirm_password').classList.add('valid');
