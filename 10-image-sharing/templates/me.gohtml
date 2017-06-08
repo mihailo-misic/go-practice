@@ -1,0 +1,90 @@
+{{template "header"}}
+
+{{template "nav"}}
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <form method="POST" action="/me-submit">
+                    <div class="card-header">
+                        <h4 class="card-title">Change Me</h4>
+                    </div>
+
+                    <hr>
+
+                    <div class="card-content center-align">
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="first_name" type="text" class="validate" name="first_name" value="{{.FirstName}}">
+                                <label for="first_name">First name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="last_name" type="text" class="validate" name="last_name" value="{{.LastName}}">
+                                <label for="last_name">Last name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="email" type="email" class="validate" name="email" value="{{.Email}}">
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="old_password" type="password" name="old_password" oninput="compare()">
+                                <label for="old_password">Old password</label>
+                                <p class="error pass-error materialize-red-text">The passwords are the same!</p>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="new_password" type="password" name="new_password" oninput="compare()">
+                                <label for="new_password">New password</label>
+                                <p class="error pass-error materialize-red-text">The passwords are the same!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="col s6 left-align">
+                                <a href="/" class="waves-effect waves-light teal accent-3 btn-large"><i class="material-icons left">skip_previous</i>Back</a>
+                            </div>
+                            <div class="col s6 right-align">
+                                <button type="submit" class="waves-effect waves-light cyan accent-4 btn-large"><i class="material-icons left">mode_edit</i>Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function compare() {
+        var pass = document.querySelector("#old_password").value;
+        var c_pass = document.querySelector("#new_password").value;
+        var elements = document.getElementsByClassName("pass-error");
+        var i = 0;
+
+        if (pass === c_pass && (pass.length !== 0 && c_pass.length !== 0)) {
+            for (i; i < elements.length; i++) {
+                elements[i].classList.add("show")
+            }
+            document.getElementById('old_password').classList.add('invalid');
+            document.getElementById('new_password').classList.add('invalid');
+            document.getElementById('old_password').classList.remove('valid');
+            document.getElementById('new_password').classList.remove('valid');
+        }
+        else {
+            for (i; i < elements.length; i++) {
+                elements[i].classList.remove("show")
+            }
+            document.getElementById('old_password').classList.add('valid');
+            document.getElementById('new_password').classList.add('valid');
+            document.getElementById('old_password').classList.remove('invalid');
+            document.getElementById('new_password').classList.remove('invalid');
+        }
+    }
+</script>
+{{template "footer"}}

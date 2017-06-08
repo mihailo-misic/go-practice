@@ -1,11 +1,15 @@
 body > .login-body {
     min-height: 100vh;
-    padding-top: calc((100vh - 430px) / 2);
+    padding-top: calc((100vh - 430px) / 4);
 }
 
 body > .register-body {
     min-height: 100vh;
-    padding-top: calc((100vh - 630px) / 2);
+    padding-top: calc((100vh - 630px) / 4);
+}
+
+nav {
+    margin-bottom: 50px;
 }
 
 .register-body > .row, .login-body > .row {

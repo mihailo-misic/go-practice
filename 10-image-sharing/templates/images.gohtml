@@ -1,0 +1,46 @@
+{{template "header"}}
+
+{{template "nav"}}
+
+<div class="container">
+    <div class="row">
+        <div class="col offset-s3 s6">
+            <div class="card">
+                <form method="POST" action="/images-upload" enctype="multipart/form-data">
+                    <div class="card-header">
+                        <h4 class="card-title">Upload a image</h4>
+                    </div>
+
+                    <hr>
+
+                    <div class="card-content center-align">
+                        <div class="row">
+                            <div class="file-field input-field">
+                                <div class="btn cyan accent-4">
+                                    <span>Pick Image</span>
+                                    <input type="file" accept=".jpeg,.jpg,.png" name="image">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="col s6 left-align">
+                                <a href="/" class="waves-effect waves-light teal accent-3 btn-large"><i class="material-icons left">skip_previous</i>Back</a>
+                            </div>
+                            <div class="col s6 right-align">
+                                <button type="submit" class="waves-effect waves-light cyan accent-4 btn-large"><i class="material-icons left">navigation</i>Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "footer"}}

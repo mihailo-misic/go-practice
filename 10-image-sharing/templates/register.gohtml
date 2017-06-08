@@ -30,14 +30,14 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="password" type="password" class="invalid" name="password" oninput="compare()">
+                                <input id="password" type="password" name="password" oninput="compare()">
                                 <label for="password">Password</label>
                                 <p class="error pass-error materialize-red-text">The passwords do not match!</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="confirm_password" type="password" class="invalid" name="confirm_password" oninput="compare()">
+                                <input id="confirm_password" type="password" name="confirm_password" oninput="compare()">
                                 <label for="confirm_password">Confirm password</label>
                                 <p class="error pass-error materialize-red-text">The passwords do not match!</p>
                             </div>
@@ -46,8 +46,11 @@
 
                     <div class="card-footer">
                         <div class="row" style="margin-bottom: 0;">
-                            <div class="col s12 right-align">
-                                <button type="submit" class="waves-effect waves-light btn-large"><i class="material-icons left">mode_edit</i>Register</button>
+                            <div class="col s6 left-align">
+                                <a href="/login" class="waves-effect waves-light teal accent-3 btn-large"><i class="material-icons left">skip_previous</i>Login</a>
+                            </div>
+                            <div class="col s6 right-align">
+                                <button type="submit" class="waves-effect waves-light cyan accent-4 btn-large"><i class="material-icons left">mode_edit</i>Register</button>
                             </div>
                         </div>
                     </div>
@@ -64,7 +67,7 @@
         var elements = document.getElementsByClassName("pass-error");
         var i = 0;
 
-        if (pass !== c_pass) {
+        if (pass !== c_pass && (pass.length !== 0 && c_pass.length !== 0)) {
             for (i; i < elements.length; i++) {
                 elements[i].classList.add("show")
             }
