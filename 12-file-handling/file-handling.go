@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// This program covers the following:
 // Create
 // Read
 // Write (Append || Replace)
@@ -85,7 +86,7 @@ func ReadFile(file *os.File) {
 	for count := 1; scanner.Scan(); count++ {
 		fmt.Printf("Reading line (%v): %v\n", count, scanner.Text())
 	}
-	file.Seek(0, 0)
+	file.Seek(0, 0) // Reset the pointer to the beginning
 }
 
 func WatchFile(fname string) {
@@ -109,7 +110,7 @@ func WriteToFile(file *os.File) {
 		writeBuffer.WriteString(fmt.Sprintf("Added line %v\n", i))
 	}
 	writeBuffer.Flush()
-	file.Seek(0, 0)
+	file.Seek(0, 0) // Reset the pointer to the beginning
 }
 
 func removeFile(dirName string) {
