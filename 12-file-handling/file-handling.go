@@ -1,27 +1,65 @@
 package main
 
 import (
-	"bufio"
+	"bufio" // For buffered reading & writing
 	"fmt"
-	"io"
+	"io" // For Copying
 	"log"
-	"os"
+	"os" // Creating, Opening, Renaming, Removing, and setting permissions
+	"time"
 )
 
+// Create
+// Read
+// Write (Append || Replace)
+// Move/Rename
+// Copy
+// Status
+// Watch the file
+// Delete
+
 func main() {
+	srcFile := "source/data.txt"
+	dstFile := "dest/data.txt"
+
 	CreateDir("source")
-	file, err := os.Create("source/data.txt")
+	file, err := os.Create(srcFile)
 	PrintFatalError(err)
 	fmt.Println("File data has been created.")
 	defer file.Close()
 
 	wb := bufio.NewWriter(file)
-	for i := 1; i <= 1000; i++ {
+	for i := 1; i <= 10; i++ {
 		wb.WriteString(fmt.Sprintf("%v) User connected\n", i))
 	}
 	wb.Flush()
 
-	CopyFile("source/data.txt", "dest/data.txt")
+	CopyFile(srcFile, dstFile)
+
+	file2, err := os.OpenFile(dstFile, os.O_APPEND|os.O_RDWR, 0644)
+	PrintFatalError(err)
+	defer file2.Close()
+
+	ReadFile(file2)
+
+	go WatchFile(dstFile)
+
+	for i := 0; i < 10; i++ {
+		WriteToFile(file2)
+		time.Sleep(1 * time.Second)
+	}
+
+	ReadFile(file2)
+
+	removeFile(srcFile)
+	renameFile(dstFile, "./sacred.txt")
+	removeFile(dstFile)
+}
+
+func CreateDir(dirName string) {
+	if _, err := os.Stat(dirName); os.IsNotExist(err) {
+		os.MkdirAll(dirName, os.ModePerm)
+	}
 }
 
 func CopyFile(fname1, fname2 string) {
@@ -42,14 +80,62 @@ func CopyFile(fname1, fname2 string) {
 	PrintFatalError(err)
 }
 
-func PrintFatalError(err error) {
-	if err != nil {
-		log.Fatal(err)
+func ReadFile(file *os.File) {
+	scanner := bufio.NewScanner(file)
+	for count := 1; scanner.Scan(); count++ {
+		fmt.Printf("Reading line (%v): %v\n", count, scanner.Text())
+	}
+	file.Seek(0, 0)
+}
+
+func WatchFile(fname string) {
+	fileStat, err := os.Stat(fname)
+	PrintFatalError(err)
+	for {
+		time.Sleep(1 / 2 * time.Second)
+		fileStat2, err := os.Stat(fname)
+		PrintFatalError(err)
+		if fileStat.ModTime() != fileStat2.ModTime() {
+			fmt.Println("File was modified at", fileStat2.ModTime())
+			fileStat, err = os.Stat(fname)
+			PrintFatalError(err)
+		}
 	}
 }
 
-func CreateDir(dirname string) {
-	if _, err := os.Stat(dirname); os.IsNotExist(err) {
-		os.MkdirAll(dirname, os.ModePerm)
+func WriteToFile(file *os.File) {
+	writeBuffer := bufio.NewWriter(file)
+	for i := 1; i <= 5; i++ {
+		writeBuffer.WriteString(fmt.Sprintf("Added line %v\n", i))
+	}
+	writeBuffer.Flush()
+	file.Seek(0, 0)
+}
+
+func removeFile(dirName string) {
+	err := os.RemoveAll(dirName)
+	PrintFatalError(err)
+}
+
+func renameFile(oldPath, newPath string) {
+	err := os.Rename(oldPath, newPath)
+	PrintFatalError(err)
+	fmt.Println("File from", oldPath, "moved to", newPath, "here are its stats:")
+	FileStat(newPath)
+}
+
+func FileStat(fname string) {
+	fileStats, err := os.Stat(fname)
+	PrintFatalError(err)
+	fmt.Println("File name:", fileStats.Name())
+	fmt.Println("Is a dir:", fileStats.IsDir())
+	fmt.Println("Permissions:", fileStats.Mode())
+	fmt.Println("File size:", fileStats.Size())
+	fmt.Println("Last time the file modified:", fileStats.ModTime())
+}
+
+func PrintFatalError(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
 }
