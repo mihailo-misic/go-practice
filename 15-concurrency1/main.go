@@ -43,20 +43,20 @@ func main() {
 	<-ch
 }
 
+func (p *Person) GetReady(ch chan string) {
+	fmt.Println(p.Name + " started getting ready...")
+	d := time.Duration(RandRange(10, 25)) * time.Second
+	time.Sleep(d)
+	fmt.Println(p.Name + " spent " + d.String() + " getting ready.")
+	ch <- "done"
+}
+
 func Alarm(ch chan string) {
 	fmt.Println("Arming alarm.")
 	time.Sleep(5 * time.Second)
 	fmt.Println("Alarm is counting down...")
 	time.Sleep(20 * time.Second)
 	fmt.Println("Alarm is armed!")
-	ch <- "done"
-}
-
-func (p *Person) GetReady(ch chan string) {
-	fmt.Println(p.Name + " started getting ready...")
-	d := time.Duration(RandRange(10, 25)) * time.Second
-	time.Sleep(d)
-	fmt.Println(p.Name + " spent " + d.String() + " getting ready.")
 	ch <- "done"
 }
 
