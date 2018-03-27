@@ -39,7 +39,6 @@ func main() {
 		if bc < 8 {
 			go t.UsePC(busy)
 			<-busy
-			<-busy
 		}
 	}
 }
@@ -47,12 +46,10 @@ func main() {
 func (t *Tourist) UsePC(c chan int) {
 	fmt.Printf("Tourist %s is online.\n", t.Name)
 	bc++
-	c <- bc
 	d := time.Duration(randRange(5, 10)) * time.Second
 	time.Sleep(d)
 	fmt.Printf("Tourist %s is done - spent %s online.\n", t.Name, d)
 	bc--
-	c <- bc
 }
 
 // Helpers
